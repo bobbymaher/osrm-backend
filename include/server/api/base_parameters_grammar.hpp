@@ -200,13 +200,18 @@ struct BaseParametersGrammar : boost::spirit::qi::grammar<Iterator, Signature>
                        (qi::as_string[+qi::char_("a-zA-Z0-9")] %
                         ',')[ph::bind(&engine::api::BaseParameters::exclude, qi::_r1) = qi::_1];
 
-        base_rule = radiuses_rule(qi::_r1)         //
-                    | hints_rule(qi::_r1)          //
-                    | bearings_rule(qi::_r1)       //
-                    | generate_hints_rule(qi::_r1) //
-                    | skip_waypoints_rule(qi::_r1) //
-                    | approach_rule(qi::_r1)       //
-                    | exclude_rule(qi::_r1)        //
+        exclude_snapping_rule =
+            qi::lit("exclude_snapping=") >
+            qi::bool_[ph::bind(&engine::api::BaseParameters::exclude_snapping, qi::_r1) = qi::_1];
+
+        base_rule = radiuses_rule(qi::_r1)           //
+                    | hints_rule(qi::_r1)            //
+                    | bearings_rule(qi::_r1)         //
+                    | generate_hints_rule(qi::_r1)   //
+                    | skip_waypoints_rule(qi::_r1)   //
+                    | approach_rule(qi::_r1)         //
+                    | exclude_rule(qi::_r1)          //
+                    | exclude_snapping_rule(qi::_r1) //
                     | snapping_rule(qi::_r1);
     }
 
@@ -228,6 +233,7 @@ struct BaseParametersGrammar : boost::spirit::qi::grammar<Iterator, Signature>
     qi::rule<Iterator, Signature> skip_waypoints_rule;
     qi::rule<Iterator, Signature> approach_rule;
     qi::rule<Iterator, Signature> exclude_rule;
+    qi::rule<Iterator, Signature> exclude_snapping_rule;
 
     qi::rule<Iterator, osrm::engine::Bearing()> bearing_rule;
     qi::rule<Iterator, osrm::util::Coordinate()> location_rule;

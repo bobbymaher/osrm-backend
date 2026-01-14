@@ -203,7 +203,8 @@ class BasePlugin
                 use_bearings ? parameters.bearings[i] : std::nullopt,
                 use_approaches && parameters.approaches[i] ? parameters.approaches[i].value()
                                                            : engine::Approach::UNRESTRICTED,
-                use_all_edges);
+                use_all_edges,
+                parameters.exclude_snapping);
         }
 
         return phantom_nodes;
@@ -244,7 +245,8 @@ class BasePlugin
                 use_radiuses ? parameters.radiuses[i] : default_radius,
                 use_bearings ? parameters.bearings[i] : std::nullopt,
                 use_approaches && parameters.approaches[i] ? parameters.approaches[i].value()
-                                                           : engine::Approach::UNRESTRICTED);
+                                                           : engine::Approach::UNRESTRICTED,
+                parameters.exclude_snapping);
 
             // we didn't find a fitting node, return error
             if (phantom_nodes[i].empty())
@@ -287,7 +289,8 @@ class BasePlugin
                 use_bearings ? parameters.bearings[i] : std::nullopt,
                 use_approaches && parameters.approaches[i] ? parameters.approaches[i].value()
                                                            : engine::Approach::UNRESTRICTED,
-                use_all_edges);
+                use_all_edges,
+                parameters.exclude_snapping);
 
             // we didn't find a fitting node, return error
             if (alternatives[i].first.empty())

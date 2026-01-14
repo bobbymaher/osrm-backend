@@ -87,6 +87,11 @@ struct BaseParameters
     // Remove waypoints array from the response.
     bool skip_waypoints = false;
 
+    // Apply exclude filter to snapping (start/end point selection).
+    // When false, excluded roads can still be used for start/end points,
+    // but will be avoided for intermediate routing.
+    bool exclude_snapping = true;
+
     SnappingType snapping = SnappingType::Default;
 
     BaseParameters(std::vector<util::Coordinate> coordinates_ = {},

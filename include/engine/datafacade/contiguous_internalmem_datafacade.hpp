@@ -370,12 +370,13 @@ class ContiguousInternalMemoryDataFacadeBase : public BaseDataFacade
                                const double max_distance,
                                const std::optional<Bearing> bearing,
                                const Approach approach,
-                               const bool use_all_edges) const override final
+                               const bool use_all_edges,
+                               const bool exclude_snapping = true) const override final
     {
         BOOST_ASSERT(m_geospatial_query.get());
 
         return m_geospatial_query->NearestPhantomNodes(
-            input_coordinate, approach, max_distance, bearing, use_all_edges);
+            input_coordinate, approach, max_distance, bearing, use_all_edges, exclude_snapping);
     }
 
     std::vector<PhantomNodeWithDistance>
@@ -383,12 +384,13 @@ class ContiguousInternalMemoryDataFacadeBase : public BaseDataFacade
                         const size_t max_results,
                         const std::optional<double> max_distance,
                         const std::optional<Bearing> bearing,
-                        const Approach approach) const override final
+                        const Approach approach,
+                        const bool exclude_snapping = true) const override final
     {
         BOOST_ASSERT(m_geospatial_query.get());
 
         return m_geospatial_query->NearestPhantomNodes(
-            input_coordinate, approach, max_results, max_distance, bearing, std::nullopt);
+            input_coordinate, approach, max_results, max_distance, bearing, std::nullopt, exclude_snapping);
     }
 
     PhantomCandidateAlternatives
@@ -396,12 +398,13 @@ class ContiguousInternalMemoryDataFacadeBase : public BaseDataFacade
                                                      const std::optional<double> max_distance,
                                                      const std::optional<Bearing> bearing,
                                                      const Approach approach,
-                                                     const bool use_all_edges) const override final
+                                                     const bool use_all_edges,
+                                                     const bool exclude_snapping = true) const override final
     {
         BOOST_ASSERT(m_geospatial_query.get());
 
         return m_geospatial_query->NearestCandidatesWithAlternativeFromBigComponent(
-            input_coordinate, approach, max_distance, bearing, use_all_edges);
+            input_coordinate, approach, max_distance, bearing, use_all_edges, exclude_snapping);
     }
 
     std::uint32_t GetCheckSum() const override final { return m_check_sum; }

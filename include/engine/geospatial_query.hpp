@@ -53,12 +53,13 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
                         const Approach approach,
                         const double max_distance,
                         const std::optional<Bearing> bearing_with_range,
-                        const std::optional<bool> use_all_edges) const
+                        const std::optional<bool> use_all_edges,
+                        const bool exclude_snapping = true) const
     {
         auto results = rtree.SearchInRange(
             input_coordinate,
             max_distance,
-            [this, approach, &input_coordinate, &bearing_with_range, &use_all_edges, max_distance](
+            [this, approach, &input_coordinate, &bearing_with_range, &use_all_edges, max_distance, exclude_snapping](
                 const CandidateSegment &segment)
             {
                 auto invalidDistance =
@@ -67,7 +68,10 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
                 {
                     return std::make_pair(false, false);
                 }
-                auto valid = CheckSegmentExclude(segment) &&
+                // Only apply exclude filter during snapping if exclude_snapping is true
+                auto exclude_valid = exclude_snapping ? CheckSegmentExclude(segment)
+                                                      : std::make_pair(true, true);
+                auto valid = exclude_valid &&
                              CheckApproach(input_coordinate, segment, approach) &&
                              (use_all_edges ? HasValidEdge(segment, *use_all_edges)
                                             : HasValidEdge(segment)) &&
@@ -86,14 +90,18 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
                         const size_t max_results,
                         const std::optional<double> max_distance,
                         const std::optional<Bearing> bearing_with_range,
-                        const std::optional<bool> use_all_edges) const
+                        const std::optional<bool> use_all_edges,
+                        const bool exclude_snapping = true) const
     {
         auto results = rtree.Nearest(
             input_coordinate,
-            [this, approach, &input_coordinate, &bearing_with_range, &use_all_edges](
+            [this, approach, &input_coordinate, &bearing_with_range, &use_all_edges, exclude_snapping](
                 const CandidateSegment &segment)
             {
-                auto valid = CheckSegmentExclude(segment) &&
+                // Only apply exclude filter during snapping if exclude_snapping is true
+                auto exclude_valid = exclude_snapping ? CheckSegmentExclude(segment)
+                                                      : std::make_pair(true, true);
+                auto valid = exclude_valid &&
                              CheckApproach(input_coordinate, segment, approach) &&
                              (use_all_edges ? HasValidEdge(segment, *use_all_edges)
                                             : HasValidEdge(segment)) &&
@@ -122,7 +130,8 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
         const Approach approach,
         const std::optional<double> max_distance,
         const std::optional<Bearing> bearing_with_range,
-        const std::optional<bool> use_all_edges) const
+        const std::optional<bool> use_all_edges,
+        const bool exclude_snapping = true) const
     {
         bool has_nearest = false;
         bool has_big_component = false;
@@ -140,7 +149,8 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
              &big_component_coord,
              &big_component_distance,
              &use_all_edges,
-             &bearing_with_range](const CandidateSegment &segment)
+             &bearing_with_range,
+             exclude_snapping](const CandidateSegment &segment)
             {
                 auto is_big_component = !IsTinyComponent(segment);
                 auto not_nearest =
@@ -167,8 +177,11 @@ template <typename RTreeT, typename DataFacadeT> class GeospatialQuery
                 {
                     return std::make_pair(false, false);
                 }
+                // Only apply exclude filter during snapping if exclude_snapping is true
+                auto exclude_valid = exclude_snapping ? CheckSegmentExclude(segment)
+                                                      : std::make_pair(true, true);
                 auto use_candidate =
-                    CheckSegmentExclude(segment) &&
+                    exclude_valid &&
                     CheckApproach(input_coordinate, segment, approach) &&
                     (use_all_edges ? HasValidEdge(segment, *use_all_edges)
                                    : HasValidEdge(segment)) &&

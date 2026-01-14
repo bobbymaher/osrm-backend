@@ -127,21 +127,24 @@ class BaseDataFacade
                                const double max_distance,
                                const std::optional<Bearing> bearing,
                                const Approach approach,
-                               const bool use_all_edges) const = 0;
+                               const bool use_all_edges,
+                               const bool exclude_snapping = true) const = 0;
 
     virtual std::vector<PhantomNodeWithDistance>
     NearestPhantomNodes(const util::Coordinate input_coordinate,
                         const size_t max_results,
                         const std::optional<double> max_distance,
                         const std::optional<Bearing> bearing,
-                        const Approach approach) const = 0;
+                        const Approach approach,
+                        const bool exclude_snapping = true) const = 0;
 
     virtual PhantomCandidateAlternatives
     NearestCandidatesWithAlternativeFromBigComponent(const util::Coordinate input_coordinate,
                                                      const std::optional<double> max_distance,
                                                      const std::optional<Bearing> bearing,
                                                      const Approach approach,
-                                                     const bool use_all_edges) const = 0;
+                                                     const bool use_all_edges,
+                                                     const bool exclude_snapping = true) const = 0;
 
     virtual bool HasLaneData(const EdgeID edge_based_edge_id) const = 0;
     virtual util::guidance::LaneTupleIdPair GetLaneData(const EdgeID edge_based_edge_id) const = 0;
